@@ -1,0 +1,8 @@
+{
+  "name": "courses",
+  "version": "0.0.1",
+  "dependencies": {
+    "csv-parse": "*",
+    "lodash" : "*"
+  }
+}
