@@ -15,6 +15,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, Promi
 var importer_1 = require('./app/importer');
 function main() {
     return __awaiter(this, void 0, Promise, function* () {
+        // Import all data and log results
         var importer = new importer_1.Importer();
         yield importer.run();
         console.log(importer.getLog());

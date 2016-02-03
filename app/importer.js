@@ -12,9 +12,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, Promi
         step("next", void 0);
     });
 };
-var _ = require('lodash');
 var utils = require('./utils');
 var models_1 = require('./models');
+/**
+ * Used to import, process and log data imports
+ * Valid imported records are stored in Maps
+ */
 class Importer {
     constructor() {
         /** Imported Data **/
@@ -22,7 +25,8 @@ class Importer {
         this.students = new Map();
         this.enrollments = new Map();
         /** Import Definitions **/
-        // Definitions for importing data tables
+        // Definitions are used to map data table columns
+        // to model properties, and data arrays to models
         this.definitions = {
             course: {
                 create: function (data) {
@@ -64,6 +68,9 @@ class Importer {
          */
         this._log = '';
     }
+    /**
+     * Import and process all data files
+     */
     run() {
         return __awaiter(this, void 0, Promise, function* () {
             this.log('');
@@ -87,6 +94,7 @@ class Importer {
                 }
                 catch (ex) {
                     this.log('Could not read file: ' + fileName);
+                    continue;
                 }
                 // Process this data table, and convert rows to models
                 // Also, ensure the headers are valid
@@ -102,12 +110,12 @@ class Importer {
             this.enrollments.forEach((enrollment) => {
                 var course = this.courses.get(enrollment.courseId);
                 var student = this.students.get(enrollment.userId);
-                // Invalid Course Found
+                // Invalid Course found
                 if (!course) {
                     this.log('Invalid Enrollment, Course: ' + enrollment.courseId);
                     toRemove.push(enrollment);
                 }
-                // Invalid
+                // Invalid Student found
                 if (!student) {
                     this.log('Invalid Enrollment, Student: ' + enrollment.userId);
                     toRemove.push(enrollment);
@@ -121,9 +129,9 @@ class Importer {
                 this.enrollments.delete(enrollment.id);
             }
             this.log('');
-            // Log active courses and students
+            // Log active courses
             var activeCourses = this.getActiveCourses();
-            this.log(`${activeCourses.length} Active Courses Imported:`);
+            this.log(`${activeCourses.length} Active Courses Imported:\n`);
             for (let course of activeCourses) {
                 this.log(course.toString());
                 // Log active students for each course
@@ -131,23 +139,37 @@ class Importer {
                 for (let student of activeStudents) {
                     this.log('\t' + student.toString());
                 }
+                this.log('');
             }
+            this.log('\nImport completed successfully');
         });
     }
+    /**
+     * Retrieve active courses
+     */
     getActiveCourses() {
-        var courses = this.courses.values();
-        return _.filter(courses, (o) => o.isActive);
-    }
-    getActiveStudentsForCourse(courseId) {
-        var vals = this.enrollments.values();
-        var enrollments = _.filter(vals, (o) => o.courseId == courseId);
-        var students = [];
-        for (let enrollment of enrollments) {
-            if (enrollment.isActive && enrollment.student.isActive) {
-                students.push(enrollment.student);
+        var active = [];
+        this.courses.forEach((course) => {
+            if (course.isActive) {
+                active.push(course);
             }
-        }
-        return students;
+        });
+        return active;
+    }
+    /**
+     * Retrieve active students for a course
+     * Enrollment and Student must be active
+     */
+    getActiveStudentsForCourse(courseId) {
+        var active = [];
+        this.enrollments.forEach((enrollment) => {
+            if (enrollment.course.id == courseId &&
+                enrollment.isActive &&
+                enrollment.student.isActive) {
+                active.push(enrollment.student);
+            }
+        });
+        return active;
     }
     /** Data Table Processing **/
     /**

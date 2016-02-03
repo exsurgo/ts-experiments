@@ -3,8 +3,15 @@ import * as _ from 'lodash';
 import * as utils from './utils';
 import {Course, Student, Enrollment} from './models';
 
+/**
+ * Used to import, process and log data imports
+ * Valid imported records are stored in Maps
+ */
 export class Importer {
 
+    /**
+     * Import and process all data files
+     */
     async run() : Promise<void> {
 
         this.log('');
@@ -31,6 +38,7 @@ export class Importer {
             }
             catch(ex) {
                 this.log('Could not read file: ' + fileName);
+                continue;
             }
 
             // Process this data table, and convert rows to models
@@ -52,13 +60,13 @@ export class Importer {
             var course: Course = this.courses.get(enrollment.courseId);
             var student: Student = this.students.get(enrollment.userId);
 
-            // Invalid Course Found
+            // Invalid Course found
             if (!course) {
                 this.log('Invalid Enrollment, Course: ' + enrollment.courseId);
                 toRemove.push(enrollment);
             }
 
-            // Invalid
+            // Invalid Student found
             if (!student) {
                 this.log('Invalid Enrollment, Student: ' + enrollment.userId);
                 toRemove.push(enrollment);
@@ -77,9 +85,9 @@ export class Importer {
 
         this.log('');
 
-        // Log active courses and students
+        // Log active courses
         var activeCourses = this.getActiveCourses();
-        this.log(`${activeCourses.length} Active Courses Imported:`);
+        this.log(`${activeCourses.length} Active Courses Imported:\n`);
         for (let course of activeCourses) {
 
             this.log(course.toString());
@@ -89,9 +97,11 @@ export class Importer {
             for (let student of activeStudents) {
                 this.log('\t' + student.toString());
             }
+            this.log('');
 
         }
 
+        this.log('\nImport completed successfully')
 
     }
 
@@ -102,21 +112,40 @@ export class Importer {
     public students: Map<string, Student> = new Map();
     public enrollments: Map<string, Enrollment> = new Map();
 
+    /**
+     * Retrieve active courses
+     */
     getActiveCourses(): Array<Course> {
-        var courses: any = this.courses.values();
-        return _.filter(courses, (o: any) => o.isActive);
+
+        var active = [];
+        this.courses.forEach((course: Course) => {
+            if (course.isActive) {
+                active.push(course);
+            }
+        });
+
+        return active;
+
     }
 
+    /**
+     * Retrieve active students for a course
+     * Enrollment and Student must be active
+     */
     getActiveStudentsForCourse(courseId: string): Array<Student> {
-        var vals = this.enrollments.values();
-        var enrollments = _.filter(vals, (o: any) => o.courseId == courseId);
-        var students = [];
-        for (let enrollment of enrollments) {
-            if (enrollment.isActive && enrollment.student.isActive) {
-                students.push(enrollment.student);
+
+        var active = [];
+
+        this.enrollments.forEach((enrollment: Enrollment) => {
+            if (enrollment.course.id == courseId &&
+                enrollment.isActive &&
+                enrollment.student.isActive) {
+                    active.push(enrollment.student);
             }
-        }
-        return students;
+        });
+
+        return active;
+
     }
 
 
@@ -168,7 +197,8 @@ export class Importer {
 
     /** Import Definitions **/
 
-    // Definitions for importing data tables
+    // Definitions are used to map data table columns
+    // to model properties, and data arrays to models
     private definitions = {
         course: {
             create: function(data) {

@@ -1,6 +1,5 @@
 "use strict";
 
-
 /**
  * Base model
  */
@@ -9,7 +8,7 @@ class Model {
     state: string;
 
     get isActive() {
-        return state === 'active';
+        return this.state === 'active';
     }
 
     constructor(values?: Object) {

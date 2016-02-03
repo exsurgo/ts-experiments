@@ -20,7 +20,7 @@ class Model {
         Object.assign(this, values);
     }
     get isActive() {
-        return state === 'active';
+        return this.state === 'active';
     }
 }
 /**
