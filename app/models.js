@@ -12,27 +12,45 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, Promi
         step("next", void 0);
     });
 };
+/**
+ * Base model
+ */
+class Model {
+    constructor(values) {
+        Object.assign(this, values);
+    }
+}
+/**
+ * Course data
+ */
 class Course extends Model {
     constructor(values) {
         super(values);
     }
+    toString() {
+        return `${this.name} (${this.id})`;
+    }
 }
 exports.Course = Course;
+/**
+ * Student data
+ */
 class Student extends Model {
     constructor(values) {
         super(values);
     }
 }
 exports.Student = Student;
+/**
+ * Join between course and student
+ */
 class Enrollment extends Model {
     constructor(values) {
         super(values);
     }
-}
-exports.Enrollment = Enrollment;
-class Model {
-    constructor(values) {
-        Object.assign(this, values);
+    get id() {
+        return this.courseId + '-' + this.studentId;
     }
 }
+exports.Enrollment = Enrollment;
 //# sourceMappingURL=models.js.map

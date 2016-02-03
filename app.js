@@ -16,7 +16,8 @@ var importer_1 = require('./app/importer');
 function main() {
     return __awaiter(this, void 0, Promise, function* () {
         var importer = new importer_1.Importer();
-        importer.run();
+        yield importer.run();
+        console.log(importer.getLog());
     });
 }
 main();

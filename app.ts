@@ -5,7 +5,8 @@ import {Importer} from './app/importer';
 async function main() {
 
     var importer = new Importer();
-    importer.run();
+    await importer.run();
+    console.log(importer.getLog());
 
 }
 
