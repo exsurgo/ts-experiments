@@ -1,4 +1,5 @@
 "use strict";
+import * as _ from 'lodash';
 import * as utils from './utils';
 import {Course, Student, Enrollment} from './models';
 
@@ -22,8 +23,7 @@ export class Importer {
         }
 
         // Import and process each file
-        //for (let fileName of fileNames) {
-            let fileName = fileNames[0];
+        for (let fileName of fileNames) {
 
             // Read and parse the individual CSV file
             var data: Array<Array<string>>;
@@ -36,11 +36,45 @@ export class Importer {
             }
 
             // Process this data table, and convert rows to models
+            // Also, ensure the headers are valid
             if (!this.processDataTable(data)) {
                 this.log(`Data headers for file ${fileName} are not valid\n`);
             }
 
-        //}
+        }
+
+        // Process enrollments, assign student/course refs
+        // Enrollments are valid if student id or course id is invalid
+        // Discard the enrollment if it is invalid
+        var toRemove: Array<Enrollment> = [];
+        this.enrollments.forEach((enrollment: Enrollment) => {
+
+            var course: Course = this.courses.get(enrollment.courseId);
+            var student: Student = this.students.get(enrollment.studentId);
+
+            // Invalid Course Found
+            if (!course) {
+                this.log('Invalid Enrollment, Course: ' + enrollment.courseId);
+                toRemove.push(enrollment);
+            }
+
+            // Invalid
+            if (!student) {
+                this.log('Invalid Enrollment, Student: ' + enrollment.studentId);
+                toRemove.push(enrollment);
+            }
+
+            // Assign student/course refs
+            enrollment.course = course;
+            enrollment.student = student;
+
+        });
+
+        // Remove invalid enrollments
+        for (let enrollment of toRemove) {
+            this.enrollments.delete(enrollment.id);
+        }
+
 
     }
 
@@ -70,12 +104,12 @@ export class Importer {
                         // Process each column in row
                         // Convert row to object and assign to model
                         let values = {};
-                        row.forEach((col: string, i) => {
-                            // Convert snake_case to camelCase props
-                            let propName = this.convertSnakeCase(header[i]);
-                            values[propName] = col;
+                        row.forEach((colValue: string, i) => {
+                            // Get property name
+                            var propName = def.cols[header[i]];
+                            values[propName] = colValue;
                         });
-                        def.create(values);
+                        def.create.call(this, values);
 
                     }
                 });
@@ -90,46 +124,62 @@ export class Importer {
 
     }
 
-    private convertSnakeCase(name: string) : string {
-        return name.replace(/(\-\w)/g, function(m) {
-            return m[1].toUpperCase();
-        });
-    }
-
 
     /** Import Definitions **/
 
+    // Definitions for importing data tables
     private definitions = {
         course: {
             create: function(data) {
                 var course = new Course(data);
                 this.courses.set(course.id, course);
             },
-            cols: ['course_id', 'course_name', 'state']
+            cols: {
+                'course_id': 'id',
+                'course_name': 'name',
+                'state': 'state'
+            }
         },
         student: {
             create: function(data) {
                 var student = new Student(data);
                 this.students.set(student.id, student);
             },
-            cols: ['user_id', 'user_name', 'state']
+            cols: {
+                'user_id': 'id',
+                'user_name': 'name',
+                'state': 'state'
+            }
         },
         enrollment: {
             create: function(data) {
                 var enrollment = new Enrollment(data);
                 this.enrollments.set(enrollment.id, enrollment);
             },
-            cols: ['course_id', 'user_id', 'state']
+            cols: {
+                'course_id': 'courseId',
+                'user_id': 'userId',
+                'state': 'state'
+            }
         }
     };
 
+    /**
+     * Check headers to determine is the data structure is correct
+     */
     private isValidHeader(name: string, header: Array<string>) : boolean {
+
+        var def = this.definitions[name];
+
+        // Ensure header contains all columns
         for (let col of header) {
-            if (this.definitions[name].cols.indexOf(col) == -1) {
+            if (!def.cols[col]) {
                 return false;
             }
         }
+
         return true;
+
     }
 
 

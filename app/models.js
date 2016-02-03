@@ -28,7 +28,7 @@ class Course extends Model {
         super(values);
     }
     toString() {
-        return `${this.name} (${this.id})`;
+        return `Course: ${this.name} (${this.id})`;
     }
 }
 exports.Course = Course;
@@ -39,6 +39,9 @@ class Student extends Model {
     constructor(values) {
         super(values);
     }
+    toString() {
+        return `Student: ${this.name} (${this.id})`;
+    }
 }
 exports.Student = Student;
 /**
@@ -48,8 +51,12 @@ class Enrollment extends Model {
     constructor(values) {
         super(values);
     }
+    // Unique id for enrollment based on student/course id
     get id() {
         return this.courseId + '-' + this.studentId;
+    }
+    toString() {
+        return this.student.toString() + '->' + this.course.toString();
     }
 }
 exports.Enrollment = Enrollment;
