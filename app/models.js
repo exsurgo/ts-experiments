@@ -19,6 +19,9 @@ class Model {
     constructor(values) {
         Object.assign(this, values);
     }
+    get isActive() {
+        return state === 'active';
+    }
 }
 /**
  * Course data
@@ -53,7 +56,7 @@ class Enrollment extends Model {
     }
     // Unique id for enrollment based on student/course id
     get id() {
-        return this.courseId + '-' + this.studentId;
+        return this.courseId + '-' + this.userId;
     }
     toString() {
         return this.student.toString() + '->' + this.course.toString();

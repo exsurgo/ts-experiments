@@ -8,6 +8,10 @@ class Model {
 
     state: string;
 
+    get isActive() {
+        return state === 'active';
+    }
+
     constructor(values?: Object) {
         Object.assign(this, values);
     }
@@ -57,13 +61,13 @@ export class Enrollment extends Model {
 
     // Unique id for enrollment based on student/course id
     get id() : string {
-        return this.courseId + '-' + this.studentId;
+        return this.courseId + '-' + this.userId;
     }
 
     courseId: string;
     course: Course;
 
-    studentId: string;
+    userId: string;
     student: Student;
 
     constructor(values?: Object) {

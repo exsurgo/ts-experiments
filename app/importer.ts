@@ -5,11 +5,9 @@ import {Course, Student, Enrollment} from './models';
 
 export class Importer {
 
-    public courses: Map<string, Course> = new Map();
-    public students: Map<string, Student> = new Map();
-    public enrollments: Map<string, Enrollment> = new Map();
-
     async run() : Promise<void> {
+
+        this.log('');
 
         // Get all files in data directory
         var fileNames: Array<string>;
@@ -38,10 +36,12 @@ export class Importer {
             // Process this data table, and convert rows to models
             // Also, ensure the headers are valid
             if (!this.processDataTable(data)) {
-                this.log(`Data headers for file ${fileName} are not valid\n`);
+                this.log(`Data headers for file ${fileName} are not valid`);
             }
 
         }
+
+        this.log('');
 
         // Process enrollments, assign student/course refs
         // Enrollments are valid if student id or course id is invalid
@@ -50,7 +50,7 @@ export class Importer {
         this.enrollments.forEach((enrollment: Enrollment) => {
 
             var course: Course = this.courses.get(enrollment.courseId);
-            var student: Student = this.students.get(enrollment.studentId);
+            var student: Student = this.students.get(enrollment.userId);
 
             // Invalid Course Found
             if (!course) {
@@ -60,7 +60,7 @@ export class Importer {
 
             // Invalid
             if (!student) {
-                this.log('Invalid Enrollment, Student: ' + enrollment.studentId);
+                this.log('Invalid Enrollment, Student: ' + enrollment.userId);
                 toRemove.push(enrollment);
             }
 
@@ -75,7 +75,48 @@ export class Importer {
             this.enrollments.delete(enrollment.id);
         }
 
+        this.log('');
 
+        // Log active courses and students
+        var activeCourses = this.getActiveCourses();
+        this.log(`${activeCourses.length} Active Courses Imported:`);
+        for (let course of activeCourses) {
+
+            this.log(course.toString());
+
+            // Log active students for each course
+            var activeStudents = this.getActiveStudentsForCourse(course.id);
+            for (let student of activeStudents) {
+                this.log('\t' + student.toString());
+            }
+
+        }
+
+
+    }
+
+
+    /** Imported Data **/
+
+    public courses: Map<string, Course> = new Map();
+    public students: Map<string, Student> = new Map();
+    public enrollments: Map<string, Enrollment> = new Map();
+
+    getActiveCourses(): Array<Course> {
+        var courses: any = this.courses.values();
+        return _.filter(courses, (o: any) => o.isActive);
+    }
+
+    getActiveStudentsForCourse(courseId: string): Array<Student> {
+        var vals = this.enrollments.values();
+        var enrollments = _.filter(vals, (o: any) => o.courseId == courseId);
+        var students = [];
+        for (let enrollment of enrollments) {
+            if (enrollment.isActive && enrollment.student.isActive) {
+                students.push(enrollment.student);
+            }
+        }
+        return students;
     }
 
 

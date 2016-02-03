@@ -12,10 +12,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, Promi
         step("next", void 0);
     });
 };
+var _ = require('lodash');
 var utils = require('./utils');
 var models_1 = require('./models');
 class Importer {
     constructor() {
+        /** Imported Data **/
         this.courses = new Map();
         this.students = new Map();
         this.enrollments = new Map();
@@ -64,6 +66,7 @@ class Importer {
     }
     run() {
         return __awaiter(this, void 0, Promise, function* () {
+            this.log('');
             // Get all files in data directory
             var fileNames;
             try {
@@ -88,16 +91,17 @@ class Importer {
                 // Process this data table, and convert rows to models
                 // Also, ensure the headers are valid
                 if (!this.processDataTable(data)) {
-                    this.log(`Data headers for file ${fileName} are not valid\n`);
+                    this.log(`Data headers for file ${fileName} are not valid`);
                 }
             }
+            this.log('');
             // Process enrollments, assign student/course refs
             // Enrollments are valid if student id or course id is invalid
             // Discard the enrollment if it is invalid
             var toRemove = [];
             this.enrollments.forEach((enrollment) => {
                 var course = this.courses.get(enrollment.courseId);
-                var student = this.students.get(enrollment.studentId);
+                var student = this.students.get(enrollment.userId);
                 // Invalid Course Found
                 if (!course) {
                     this.log('Invalid Enrollment, Course: ' + enrollment.courseId);
@@ -105,7 +109,7 @@ class Importer {
                 }
                 // Invalid
                 if (!student) {
-                    this.log('Invalid Enrollment, Student: ' + enrollment.studentId);
+                    this.log('Invalid Enrollment, Student: ' + enrollment.userId);
                     toRemove.push(enrollment);
                 }
                 // Assign student/course refs
@@ -116,7 +120,34 @@ class Importer {
             for (let enrollment of toRemove) {
                 this.enrollments.delete(enrollment.id);
             }
+            this.log('');
+            // Log active courses and students
+            var activeCourses = this.getActiveCourses();
+            this.log(`${activeCourses.length} Active Courses Imported:`);
+            for (let course of activeCourses) {
+                this.log(course.toString());
+                // Log active students for each course
+                var activeStudents = this.getActiveStudentsForCourse(course.id);
+                for (let student of activeStudents) {
+                    this.log('\t' + student.toString());
+                }
+            }
         });
+    }
+    getActiveCourses() {
+        var courses = this.courses.values();
+        return _.filter(courses, (o) => o.isActive);
+    }
+    getActiveStudentsForCourse(courseId) {
+        var vals = this.enrollments.values();
+        var enrollments = _.filter(vals, (o) => o.courseId == courseId);
+        var students = [];
+        for (let enrollment of enrollments) {
+            if (enrollment.isActive && enrollment.student.isActive) {
+                students.push(enrollment.student);
+            }
+        }
+        return students;
     }
     /** Data Table Processing **/
     /**
