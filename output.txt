@@ -1,0 +1,131 @@
+Importing Course Data (31 files)
+
+Importing File: 001.csv (12 records)
+Importing File: 002.csv (27 records)
+Importing File: 003.csv (54 records)
+Importing File: 004.csv (14 records)
+Importing File: 005.csv (28 records)
+Importing File: 006.csv (58 records)
+Importing File: 007.csv (15 records)
+Importing File: 008.csv (31 records)
+Importing File: 009.csv (65 records)
+Importing File: 010.csv (17 records)
+Importing File: 011.csv (34 records)
+Importing File: 012.csv (67 records)
+Importing File: 013.csv (18 records)
+Importing File: 014.csv (38 records)
+Importing File: 015.csv (74 records)
+Importing File: 016.csv (20 records)
+Importing File: 017.csv (40 records)
+Importing File: 018.csv (78 records)
+Importing File: 019.csv (21 records)
+Importing File: 020.csv (45 records)
+Importing File: 021.csv (82 records)
+Importing File: 022.csv (22 records)
+Importing File: 023.csv (48 records)
+Importing File: 024.csv (86 records)
+Importing File: 025.csv (23 records)
+Importing File: 026.csv (51 records)
+Importing File: 027.csv (90 records)
+Importing File: 028.csv (24 records)
+Importing File: 029.csv (54 records)
+Importing File: 030.csv (95 records)
+Could not read file: test-invalid.csv
+
+Invalid Enrollment, Course: C904302
+Invalid Enrollment, Student: U216074
+Invalid Enrollment, Course: C066422
+Invalid Enrollment, Course: C780004
+Invalid Enrollment, Student: U544305
+Invalid Enrollment, Student: U223076
+Invalid Enrollment, Course: C457004
+Invalid Enrollment, Student: U560122
+Invalid Enrollment, Student: U494988
+Invalid Enrollment, Student: U983350
+
+19 Active Courses Imported:
+
+Course: Suicide (C628944)
+	Student: Olivia Price (U387250)
+	Student: Chloe Wood (U346561)
+	Student: Alexander Cruz (U917218)
+	Student: Emily Miller (U700672)
+
+Course: Patents (C424294)
+	Student: Olivia Price (U387250)
+	Student: William Roberts (U977454)
+	Student: Michael Parker (U266829)
+	Student: Emily Miller (U700672)
+
+Course: Astronautics (C300581)
+	Student: William Gray (U139455)
+	Student: William Allen (U979173)
+	Student: Sophia Williams (U652606)
+	Student: Michael Cox (U824115)
+
+Course: Budgeting (C967824)
+	Student: Mia Hill (U511908)
+	Student: Alexander Cruz (U917218)
+	Student: William Allen (U979173)
+
+Course: Substance abuse (C696253)
+	Student: Daniel Phillips (U966556)
+	Student: Sophia Williams (U652606)
+	Student: Sophia Thompson (U180698)
+	Student: Ava Watson (U443006)
+
+Course: Natural religion (C165687)
+	Student: Olivia Price (U387250)
+	Student: Chloe Turner (U812256)
+	Student: Daniel Phillips (U966556)
+	Student: Chloe Wood (U346561)
+	Student: Daniel Bennett (U872282)
+
+Course: French language (C035962)
+	Student: Sophia Thompson (U180698)
+	Student: Abigail Hughes (U297015)
+	Student: Isabella Gray (U401211)
+	Student: Ava Watson (U443006)
+	Student: Alexander Stewart (U192467)
+	Student: Alexander Bell (U617555)
+
+Course: Judiciary (C032306)
+	Student: Mia Hill (U511908)
+	Student: Alexander Cruz (U917218)
+	Student: Sophia Williams (U652606)
+
+Course: Abortion, law (C732380)
+	Student: William Gray (U139455)
+	Student: Chloe Turner (U812256)
+	Student: Alexander Cruz (U917218)
+	Student: Chloe Wood (U346561)
+	Student: Ava Turner (U877257)
+
+Course: Jokes (C921807)
+	Student: Emma King (U215381)
+
+Course: Botany (C963278)
+	Student: Madison Moore (U700516)
+
+Course: Air warfare (C494738)
+
+Course: Diseases (C289566)
+	Student: Aiden Richardson (U806445)
+
+Course: Depression glass (C439738)
+	Student: William Gray (U139455)
+
+Course: Investing (C145137)
+
+Course: Kitchen remodeling (C222487)
+	Student: Noah Hern (U176749)
+	Student: Sophia Williams (U652606)
+
+Course: Weather forecasting (C212550)
+
+Course: Conservation (C313224)
+
+Course: Witchcraft (C215152)
+
+
+Import completed successfully
